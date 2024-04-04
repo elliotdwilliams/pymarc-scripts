@@ -1,13 +1,19 @@
 """Extracts subject field values  from a set of MARC records, based on a given subject source code.
 
+Iterates through a set of MARC records and outputs subject terms with a given source code in $2.
+Accepts a command line argument of filename or pattern to use as input. If a pattern (e.g. 
+subject*.mrc), enclose it in single quotes when you execute the script. 
 """
 
 import sys
 import os
+import glob
 import pymarc
 
-INPUT_FILE = sys.argv[1]
-#OUTPUT_FILE = sys.argv[2]
+INPUT_FILES = sys.argv[1]
+
+# Get all files that match input file pattern
+files = glob.glob(INPUT_FILES)
 
 
 def get_values(subject_values, subject_code, record_no, record):
@@ -17,7 +23,7 @@ def get_values(subject_values, subject_code, record_no, record):
     try:
         print(str(record_no) + ' ' + record.title)
     except UnicodeEncodeError:
-        print('Title error')
+        print(str(record_no) + '[Title error]')
 
     # Get MMS ID from 001
     for f in record.get_fields('001'):
@@ -42,15 +48,15 @@ def get_values(subject_values, subject_code, record_no, record):
                 subject_values.append(subject_value)
 
 
-def output_values(INPUT_FILE, subject_code, subject_values):
+def output_values(file, subject_code, subject_values):
     """Creates output file and prints subject values"""
 
     # Create output file name
-    basename = os.path.splitext(INPUT_FILE)[0]
-    OUTPUT_FILE = basename + "_" + subject_code + ".txt"
+    basename = os.path.splitext(file)[0]
+    output_file = basename + "_" + subject_code + ".txt"
 
-    # # Open output file and print results
-    with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
+    # Open output file and print results
+    with open(output_file, 'w', encoding='utf-8') as f:
         for i in subject_values:
             f.write(f"{i}\n")
     f.close()
@@ -59,31 +65,35 @@ def main():
     # Start record count at 1 (useful for error checking)
     record_no = 1
 
-    # subject_code = 'gtt'
     subject_code = input('Subject code: ')
-    print(subject_code)
+    # print(subject_code)
 
     # Initialize empty list of subject values
     subject_values = []
 
-    # Open file and start MARCReader
-    with open(INPUT_FILE, 'rb') as fh:
-        reader = pymarc.MARCReader(fh, to_unicode=True, force_utf8=True)
+    print(files)
 
-        for record in reader:
+    for file in files:
+        print(file)
 
-            try:
-                get_values(subject_values, subject_code, record_no, record)
-                record_no += 1
+        # Open file and start MARCReader
+        with open(file, 'rb') as fh:
+            reader = pymarc.MARCReader(fh, to_unicode=True, force_utf8=True)
 
-            except Exception as error:
-                print(str(record_no))
-                print(error)
-                record_no += 1
+            for record in reader:
 
-    fh.close()
+                try:
+                    get_values(subject_values, subject_code, record_no, record)
+                    record_no += 1
 
-    output_values(INPUT_FILE, subject_code, subject_values)
+                except Exception as error:
+                    print(str(record_no))
+                    print(error)
+                    record_no += 1
+
+        fh.close()
+
+        output_values(file, subject_code, subject_values)
 
 
 if __name__ == '__main__':
