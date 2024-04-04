@@ -1,8 +1,8 @@
 """Extracts subject field values  from a set of MARC records, based on a given subject source code.
 
 Iterates through a set of MARC records and outputs subject terms with a given source code in $2.
-Accepts a command line argument of filename or pattern to use as input. If a pattern (e.g. 
-subject*.mrc), enclose it in single quotes when you execute the script. 
+Accepts a command line argument of filename or filename pattern to use as input. If a pattern 
+(e.g. 'subject*.mrc'), enclose it in single quotes when you execute the script. 
 """
 
 import sys
