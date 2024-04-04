@@ -3,10 +3,11 @@
 """
 
 import sys
+import os
 import pymarc
 
 INPUT_FILE = sys.argv[1]
-OUTPUT_FILE = sys.argv[2]
+#OUTPUT_FILE = sys.argv[2]
 
 
 def get_values(subject_values, subject_code, record_no, record):
@@ -41,6 +42,19 @@ def get_values(subject_values, subject_code, record_no, record):
                 subject_values.append(subject_value)
 
 
+def output_values(INPUT_FILE, subject_code, subject_values):
+    """Creates output file and prints subject values"""
+
+    # Create output file name
+    basename = os.path.splitext(INPUT_FILE)[0]
+    OUTPUT_FILE = basename + "_" + subject_code + ".txt"
+
+    # # Open output file and print results
+    with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
+        for i in subject_values:
+            f.write(f"{i}\n")
+    f.close()
+
 def main():
     # Start record count at 1 (useful for error checking)
     record_no = 1
@@ -69,11 +83,7 @@ def main():
 
     fh.close()
 
-    # # Open output file and print results
-    with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
-        for i in subject_values:
-            f.write(f"{i}\n")
-    f.close()
+    output_values(INPUT_FILE, subject_code, subject_values)
 
 
 if __name__ == '__main__':
