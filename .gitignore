@@ -1,0 +1,7 @@
+# Ignore all .txt, .mrc, and .mrk files
+*.txt
+*.mrc
+*.mrk
+
+# Ignore virtual environment
+venv/
