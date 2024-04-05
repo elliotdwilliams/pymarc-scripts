@@ -43,7 +43,7 @@ def get_values(subject_values, subject_code, record_no, record):
 
             # If $2 matches subject_code print the record ID and entire subject field
             if code == subject_code:
-                subject_value = (record_id + '\t' + str(subject.value()))
+                subject_value = (record_id + '\t' + subject.value())
                 print(subject_value)
                 subject_values.append(subject_value)
 
