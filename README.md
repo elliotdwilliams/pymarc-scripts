@@ -8,4 +8,8 @@ This repository is a collection of relatively simple pymarc scripts that I've wr
 
 **4. subject_codes.py** - Extracts the subject source codes from 6XX $2 from a set of records, and counts the number of records (not the number of fields) that have each code.
 
-Currently, subject_codes accepts input and output files as command line arguments; the other scripts have filenames encoded as variables.
+**5. subject_codes_noLCSH.py** - Similar to subject_codes.py, but excludes all records that have LCSH subjects in a 6XX field.
+
+**6. subject_codes_values.py** - You give it a subject code (e.g. "fast"), and it extracts all 6XX fields from a set of records where that code appears in $2.
+
+Some scripts accept input and output files as command line arguments, and others have filenames encoded as variables.
