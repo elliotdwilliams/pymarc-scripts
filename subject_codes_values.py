@@ -62,19 +62,20 @@ def output_values(file, subject_code, subject_values):
     f.close()
 
 def main():
-    # Start record count at 1 (useful for error checking)
-    record_no = 1
 
     subject_code = input('Subject code: ')
     # print(subject_code)
-
-    # Initialize empty list of subject values
-    subject_values = []
 
     print(files)
 
     for file in files:
         print(file)
+
+        # Restart record count at 1 (useful for error checking)
+        record_no = 1
+
+        # Set subject values list as empty
+        subject_values = []
 
         # Open file and start MARCReader
         with open(file, 'rb') as fh:
@@ -93,7 +94,9 @@ def main():
 
         fh.close()
 
-        output_values(file, subject_code, subject_values)
+        # If subject_values is not empty, create output file
+        if subject_values:
+            output_values(file, subject_code, subject_values)
 
 
 if __name__ == '__main__':
