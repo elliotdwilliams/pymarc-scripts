@@ -2,7 +2,8 @@
 
 Iterates through a set of MARC records and outputs subject terms with a given source code in $2.
 Accepts a command line argument of filename or filename pattern to use as input. If a pattern 
-(e.g. 'subject*.mrc'), enclose it in single quotes when you execute the script. 
+(e.g. 'subject*.mrc'), enclose it in single quotes when you execute the script. Output file
+includes MMS ID and all contents of subject field.
 """
 
 import sys
