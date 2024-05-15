@@ -12,4 +12,8 @@ This repository is a collection of relatively simple pymarc scripts that I've wr
 
 **6. subject_codes_values.py** - You give it a subject code (e.g. "fast"), and it extracts all 6XX fields from a set of records where that code appears in $2.
 
+**7. subject_values_uniq.py** - Similar to subject_codes_values, but it deduplicates subjects so outputs a list of unique subjects for a given subject code.
+
+**8. mmsid_export.py** - Exports a plain list of all MMS IDs in a given set of MARC records. Useful for getting a list of MMS IDs to paste into Alma Analytics.
+
 Some scripts accept input and output files as command line arguments, and others have filenames encoded as variables.
