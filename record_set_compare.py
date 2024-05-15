@@ -1,3 +1,10 @@
+"""Compares two sets of MARC records to identify records that are in one set, but not the other.
+
+Filenames are set as variables within the script. Uses field 001 (MMS ID) as unique identifier 
+for each record. Exports a text file with lists of MMS IDs that appear in one file and not
+the other.
+"""
+
 import pymarc
 
 # Set filename variables
