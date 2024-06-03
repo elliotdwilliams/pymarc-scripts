@@ -40,13 +40,14 @@ def get_identifier(subject_code, record_no, record):
         code = subject.get_subfields('2')
         if code:
             code = str(code[0])
+            print(code)
 
             # If $2 matches subject_code print and return the record ID
             if code == subject_code:
-                # print(record_id)
+                print(record_id)
                 return record_id
         else:
-            return None
+            continue
 
 
 def output_values(file, subject_code, record_identifiers):
