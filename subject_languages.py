@@ -6,6 +6,7 @@
 import sys
 import os
 import glob
+from collections import Counter
 import pymarc
 
 INPUT_FILES = sys.argv[1]
@@ -14,18 +15,8 @@ INPUT_FILES = sys.argv[1]
 files = glob.glob(INPUT_FILES)
 
 
-def get_record_data(subject_codes, record_no, record):
-    """Gets record id if any subject in record matches subject code"""
-
-    # Print title to command line (for error checking)
-    try:
-        print(str(record_no) + ' ' + record.title)
-    except UnicodeEncodeError:
-        print(str(record_no) + '[Title error]')
-
-    record_id = get_identifier(record)
-
-    record_lang = get_languages(record)
+def subject_test(subject_codes, record):
+    """Tests 6XX fields to see if codes in $2 match given codes"""
 
     # Get all subject fields and iterate through them
     # Currently excludes 655
@@ -38,15 +29,14 @@ def get_record_data(subject_codes, record_no, record):
         if code:
             code = str(code[0])
 
-            # If $2 matches any of the codes in subject_code, print and return the record ID
+            # If $2 matches any of the codes in subject_codes, return True
             if code in subject_codes:
-                record_info = (record_id + '\t' + ",".join(str(lang) for lang in record_lang))
-                return record_info
+                return True
         else:
             continue
 
-    # If no matching subjects found, return null value
-    return None
+    # If no matching subjects found, return False
+    return False
 
 
 def get_identifier(record):
@@ -78,7 +68,7 @@ def get_languages(record):
     return record_lang
 
 
-def output_values(file, lang_name, record_identifiers):
+def output_values(file, lang_name, record_identifiers, lang_count):
     """Creates output file and prints subject values"""
 
     # Create output file name
@@ -87,6 +77,13 @@ def output_values(file, lang_name, record_identifiers):
 
     # Open output file and print results
     with open(output_file, 'w', encoding='utf-8') as f:
+        # Print overall counts of languages
+        for lang, count in lang_count.items():
+            f.write(lang + '\t' + str(count) + '\n')
+
+        f.write("\n******************************************\n\n")
+
+        # Print MMS IDs and languages
         for i in record_identifiers:
             f.write(f"{i}\n")
     f.close()
@@ -101,14 +98,17 @@ def main():
 
     lang_name = input('Language name (used for output filename): ')
 
+    # Initialize empty record ID list
+    record_identifiers = []
+
+    # Initialize empty language counter
+    lang_count = Counter()
+
     for file in files:
         # print(file)
 
         # Start record count at 1 (useful for error checking)
         record_no = 1
-
-        # Set record ID list as empty
-        record_identifiers = []
 
         # Open file and start MARCReader
         with open(file, 'rb') as fh:
@@ -117,13 +117,27 @@ def main():
             # Iterate through records
             for record in reader:
 
+                # Print title to command line (for error checking)
                 try:
-                    record_data = get_record_data(subject_codes, record_no, record)
+                    print(str(record_no) + ' ' + record.title)
+                except UnicodeEncodeError:
+                    print(str(record_no) + '[Title error]')
 
-                    # If record had a matching subject, add ID and language to dictionary
-                    if record_data:
+                try:
+                    # Test to see if subject codes found in 6XX fields
+                    subject_found = subject_test(subject_codes, record)
+
+                    # If record had a matching subject, add ID and language to record_identifiers
+                    if subject_found:
+                        record_id = get_identifier(record)
+                        record_lang = get_languages(record)
+
+                        record_data = record_id + '\t' + ",".join(str(lang) for lang in record_lang)
                         record_identifiers.append(record_data)
                         print(record_data)
+
+                        # Also add counter of languages to overall language Counter
+                        lang_count.update(Counter(record_lang))
 
                     # print(record_identifiers)
                     record_no += 1
@@ -134,10 +148,45 @@ def main():
 
         fh.close()
 
-        # If record_identifiers is not empty, create output file
-        if record_identifiers:
-            output_values(file, lang_name, record_identifiers)
+    print(lang_count)
+
+    # If record_identifiers is not empty, create output file
+    if record_identifiers:
+        output_values(file, lang_name, record_identifiers, lang_count)
 
 
 if __name__ == '__main__':
     main()
+
+
+# def get_record_data(subject_codes, record_no, record):
+#     """Gets record id if any subject in record matches subject code"""
+
+#     # Print title to command line (for error checking)
+#     try:
+#         print(str(record_no) + ' ' + record.title)
+#     except UnicodeEncodeError:
+#         print(str(record_no) + '[Title error]')
+
+#     # Get all subject fields and iterate through them
+#     # Currently excludes 655
+#     for subject in record.get_fields(
+#         '600', '610', '611', '630', '647', '648', '650', '651', '656', '657', '658', '662'
+#     ):
+
+#         # Get subfield 2 if it exists
+#         code = subject.get_subfields('2')
+#         if code:
+#             code = str(code[0])
+
+#             # If $2 matches any of the codes in subject_codes, get the record id and language, and return them
+#             if code in subject_codes:
+#                 record_id = get_identifier(record)
+#                 record_lang = get_languages(record)
+
+#                 return record_id, record_lang
+#         else:
+#             continue
+
+#     # If no matching subjects found, return null value
+#     return None, None
