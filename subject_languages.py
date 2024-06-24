@@ -14,11 +14,6 @@ import glob
 from collections import Counter
 import pymarc
 
-INPUT_FILES = sys.argv[1]
-
-# Get all files that match input file pattern
-files = glob.glob(INPUT_FILES)
-
 
 def subject_test(subject_codes, record):
     """Tests 6XX fields to see if codes in $2 match given codes"""
@@ -95,6 +90,11 @@ def output_values(lang_name, record_identifiers, lang_count):
 
 
 def main():
+    # Get input file name/pattern
+    INPUT_FILES = sys.argv[1]
+
+    # Get all files that match input file pattern
+    files = glob.glob(INPUT_FILES)
 
     subject_codes = input('Subject codes (separate with commas): ')
     subject_codes = subject_codes.split(",")  # Split input on commas
