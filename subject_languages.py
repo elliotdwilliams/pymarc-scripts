@@ -1,6 +1,11 @@
 """Extracts record IDs & language values for records contains a given subject source code.
 
-
+Iterates through a set of MARC records and outputs record IDs (field 001) and language of
+the material (008 and 041), if the record contains any subject terms with a given source
+code in $2. Accepts a command line argument of filename or filename pattern to use as input.
+If a pattern (e.g. 'subject*.mrc'), enclose it in single quotes when you execute the script.
+Output file includes MMS IDs from 001, language values, and an overall count of the number
+of records with each language.
 """
 
 import sys
@@ -68,12 +73,12 @@ def get_languages(record):
     return record_lang
 
 
-def output_values(file, lang_name, record_identifiers, lang_count):
+def output_values(lang_name, record_identifiers, lang_count):
     """Creates output file and prints subject values"""
 
     # Create output file name
-    basename = os.path.splitext(file)[0]
-    output_file = basename + "_" + lang_name + "_ids.txt"
+    #basename = os.path.splitext(files[0])[0]
+    output_file = lang_name + "-subject-ids.txt"
 
     # Open output file and print results
     with open(output_file, 'w', encoding='utf-8') as f:
@@ -81,7 +86,7 @@ def output_values(file, lang_name, record_identifiers, lang_count):
         for lang, count in lang_count.items():
             f.write(lang + '\t' + str(count) + '\n')
 
-        f.write("\n******************************************\n\n")
+        f.write("\n" + ("~" * 40) + "\n\n")
 
         # Print MMS IDs and languages
         for i in record_identifiers:
@@ -92,8 +97,8 @@ def output_values(file, lang_name, record_identifiers, lang_count):
 def main():
 
     subject_codes = input('Subject codes (separate with commas): ')
-    subject_codes = subject_codes.split(",") # Split input on commas
-    subject_codes = [x.strip(" ") for x in subject_codes] # Trim whitespace from subject codes
+    subject_codes = subject_codes.split(",")  # Split input on commas
+    subject_codes = [x.strip(" ") for x in subject_codes]  # Trim whitespace from subject codes
     print(subject_codes)
 
     lang_name = input('Language name (used for output filename): ')
@@ -152,7 +157,7 @@ def main():
 
     # If record_identifiers is not empty, create output file
     if record_identifiers:
-        output_values(file, lang_name, record_identifiers, lang_count)
+        output_values(lang_name, record_identifiers, lang_count)
 
 
 if __name__ == '__main__':
@@ -179,7 +184,7 @@ if __name__ == '__main__':
 #         if code:
 #             code = str(code[0])
 
-#             # If $2 matches any of the codes in subject_codes, get the record id and language, and return them
+#             # If $2 matches any of the codes in subject_codes, return the record id and language
 #             if code in subject_codes:
 #                 record_id = get_identifier(record)
 #                 record_lang = get_languages(record)
