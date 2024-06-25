@@ -73,21 +73,21 @@ def output_values(lang_name, subject_codes, record_identifiers, lang_count):
 
     # Create output file name
     #basename = os.path.splitext(files[0])[0]
-    output_file = lang_name + "-subject-ids.txt"
+    output_file = lang_name + '-subject-ids.txt'
 
     # Open output file and print results
     with open(output_file, 'w', encoding='utf-8') as f:
         # Print header info
-        f.write("Language of subjects: " + lang_name + "\n")
-        f.write("Subject codes: " + ", ".join(str(subj) for subj in subject_codes) + "\n")
-        f.write("Total number of records found: " + str(len(record_identifiers)) + "\n\n")
+        f.write('Language of subjects: ' + lang_name + '\n')
+        f.write('Subject codes: ' + ', '.join(str(subj) for subj in subject_codes) + '\n')
+        f.write('Total number of records found: ' + str(len(record_identifiers)) + '\n\n')
 
         # Print overall counts of languages
-        f.write("Number of records per language:\n")
-        for lang, count in lang_count.items():
-            f.write(lang + "\t" + str(count) + "\n")
+        f.write('Number of records per language:\n')
+        for lang, count in lang_count.most_common():
+            f.write(lang + '\t' + str(count) + '\n')
 
-        f.write("\n" + ("~" * 40) + "\n\n")
+        f.write('\n' + ('~' * 40) + '\n\n')
 
         # Print MMS IDs and languages
         for i in record_identifiers:
@@ -103,7 +103,7 @@ def main():
     files = glob.glob(INPUT_FILES)
 
     subject_codes = input('Subject codes (separate with commas): ')
-    subject_codes = subject_codes.split(",")  # Split input on commas
+    subject_codes = subject_codes.split(',')  # Split input on commas
     subject_codes = [x.strip(" ") for x in subject_codes]  # Trim whitespace from subject codes
     # print(subject_codes)
 
@@ -128,11 +128,13 @@ def main():
             # Iterate through records
             for record in reader:
 
-                # Print title to command line (for error checking)
-                try:
-                    print(str(record_no) + ' ' + record.title)
-                except UnicodeEncodeError:
-                    print(str(record_no) + '[Title error]')
+                # # Print title to command line (for error checking)
+                # try:
+                #     print(str(record_no) + ' ' + record.title)
+                # except UnicodeEncodeError:
+                #     print(str(record_no) + '[Title error]')
+                # except AttributeError:
+                #     print(str(record_no) + '[Record error]')
 
                 try:
                     # Test to see if subject codes found in 6XX fields
@@ -143,7 +145,7 @@ def main():
                         record_id = get_identifier(record)
                         record_lang = get_languages(record)
 
-                        record_data = record_id + '\t' + ",".join(str(lang) for lang in record_lang)
+                        record_data = record_id + '\t' + ','.join(str(lang) for lang in record_lang)
                         record_identifiers.append(record_data)
                         print(record_data)
 
