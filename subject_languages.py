@@ -68,7 +68,7 @@ def get_languages(record):
     return record_lang
 
 
-def output_values(lang_name, record_identifiers, lang_count):
+def output_values(lang_name, subject_codes, record_identifiers, lang_count):
     """Creates output file and prints subject values"""
 
     # Create output file name
@@ -77,9 +77,15 @@ def output_values(lang_name, record_identifiers, lang_count):
 
     # Open output file and print results
     with open(output_file, 'w', encoding='utf-8') as f:
+        # Print header info
+        f.write("Language of subjects: " + lang_name + "\n")
+        f.write("Subject codes: " + ", ".join(str(subj) for subj in subject_codes) + "\n")
+        f.write("Total number of records found: " + str(len(record_identifiers)) + "\n\n")
+
         # Print overall counts of languages
+        f.write("Number of records per language:\n")
         for lang, count in lang_count.items():
-            f.write(lang + '\t' + str(count) + '\n')
+            f.write(lang + "\t" + str(count) + "\n")
 
         f.write("\n" + ("~" * 40) + "\n\n")
 
@@ -99,7 +105,7 @@ def main():
     subject_codes = input('Subject codes (separate with commas): ')
     subject_codes = subject_codes.split(",")  # Split input on commas
     subject_codes = [x.strip(" ") for x in subject_codes]  # Trim whitespace from subject codes
-    print(subject_codes)
+    # print(subject_codes)
 
     lang_name = input('Language name (used for output filename): ')
 
@@ -157,7 +163,7 @@ def main():
 
     # If record_identifiers is not empty, create output file
     if record_identifiers:
-        output_values(lang_name, record_identifiers, lang_count)
+        output_values(lang_name, subject_codes, record_identifiers, lang_count)
 
 
 if __name__ == '__main__':
