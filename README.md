@@ -18,4 +18,6 @@ This repository is a collection of relatively simple pymarc scripts that I've wr
 
 **9. mmsid_export.py** - Exports a plain list of all MMS IDs in a given set of MARC records. Useful for getting a list of MMS IDs to paste into Alma Analytics.
 
+**10. field_export.py** - Exports the MMS ID and complete field value for a given MARC field.  (E.g., exports all 710 fields along with their MMS ID)
+
 Some scripts accept input and output files as command line arguments, and others have filenames encoded as variables.
