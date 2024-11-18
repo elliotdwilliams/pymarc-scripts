@@ -1,45 +1,43 @@
 """Extracts record IDs and specific fields from a file of MARC records.
 
-Iterates through a set of MARC records and outputs a tab-delimited file including record 
-IDs (from field 001) and values of given fields. Accepts a command line argument of 
-filename or filename pattern to use as input. If a pattern (e.g. 'subject*.mrc'), enclose 
+Iterates through a set of MARC records and outputs a tab-delimited file including record
+IDs (from field 001) and values of given fields. Accepts a command line argument of
+filename or filename pattern to use as input. If a pattern (e.g. 'subject*.mrc'), enclose
 it in single quotes when you execute the script.
 """
 
 import sys
 import os
 import glob
+import re
 import pymarc
 
 INPUT_FILES = sys.argv[1]
 
-# These are the fields you want to look for
-FIELDS = ['773']
 
-
-def get_fields(record, FIELDS, output_data):
-    """Checks for MARC fields from FIELDS constant. If found, adds the MMS ID and 
-    field to output list."""
+def get_fields(record, target_field, output_data):
+    """Checks for MARC fields based on target field. If found, adds the MMS ID
+    and field to output list."""
 
     # Get MMS ID from 001
     for f in record.get_fields('001'):
         record_id = str(f.value())
 
     # Test to see if target fields are in record
-    target_fields = record.get_fields(*FIELDS)
+    target_fields = record.get_fields(target_field)
 
     for field in target_fields:
         print(record_id)
         print(field)
         output_data.append(record_id + '\t' + str(field))
-        
 
-def output_values(file, output_data):
+
+def output_values(file, target_field, output_data):
     """Creates output file and prints identifiers + fields"""
 
     # Create output file name
     basename = os.path.splitext(file)[0]
-    output_file = basename + '_export.txt'
+    output_file = basename + '_' + target_field + '_export.txt'
 
     # Open output file and print results
     with open(output_file, 'w', encoding='utf-8') as f:
@@ -51,7 +49,16 @@ def output_values(file, output_data):
 def main():
     # Get all files that match input file pattern
     files = glob.glob(INPUT_FILES)
-            
+
+    # Get MARC tag from user input and validate it
+    while True:
+        target_field = input("Enter MARC field: ")
+        if not re.match(r"^\d{3}$", target_field):
+            print("Sorry, that doesn't look like a valid MARC field.")
+            continue
+        else:
+            break
+
     for file in files:
         print(file)
 
@@ -71,7 +78,7 @@ def main():
                 try:
                     print(str(record_no))
 
-                    get_fields(record, FIELDS, output_data)
+                    get_fields(record, target_field, output_data)
 
                     record_no += 1
 
@@ -84,7 +91,7 @@ def main():
 
         # If record_identifiers is not empty, create output file
         if output_data:
-            output_values(file, output_data)
+            output_values(file, target_field, output_data)
 
 
 if __name__ == '__main__':
